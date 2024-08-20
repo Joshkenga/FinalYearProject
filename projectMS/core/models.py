@@ -13,7 +13,7 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
         user = self.model(email=email, username=username, **extra_fields)
-        user.set_password(make_password(password))
+        user.set_password(password)
         user.save(using=self._db)
         return user
     
@@ -96,7 +96,7 @@ class Project(models.Model):
     platform = models.TextField(choices=PLATFORM_CHOICES, null=True, blank=True, default=None)
     categories = models.ManyToManyField(Category, blank=True, related_name='projects')
     upgradable = models.BooleanField(default=False)
-    comment = models.TextField(max_length=500, default="")
+    comment = models.TextField(max_length=500, default="", blank=True, null=True)
     
     def __str__(self) -> str:
         return self.title

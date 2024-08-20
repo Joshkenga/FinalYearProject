@@ -80,6 +80,9 @@ popupOverlay.addEventListener('click', (e)=>{
         dismissPopup();
     }
 })
+cancelPopupBtn.addEventListener('click', ()=>{
+    dismissPopup()
+})
 
 markAsCompletedBtn.addEventListener('click', showPopup);
 continuePopupBtn.addEventListener('click', markAsCompleted);
