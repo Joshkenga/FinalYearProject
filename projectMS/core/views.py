@@ -308,36 +308,39 @@ def get_notifications(request, user_id):
     projects = Project.objects.filter(is_completed=False)
     print(f"\nThe projects : {projects}\n")
     for project in projects:
-        notif_obj = {'deadlines_list':[], 'project_name':project.title,
-                    'project_link':reverse('core_app:single_group', kwargs={'group_id':project.group.pk})}
-        # print('\n\n project link ', notif_obj['project_link'], '\n\n')
         try:
-            if project.proposal_deadline.date() >= today:
-                notif_obj['deadlines_list'].append({'Proposal deadline':
-                project.proposal_deadline.date().strftime("%d/%m/%Y")})
-        except:
-            pass
-        try:
-            if project.documentation_deadline.date() >= today:
-                notif_obj['deadlines_list'].append({'Documentation deadline':
-                project.documentation_deadline.date().strftime("%d/%m/%Y")})
-        except:
-            pass
-        try:
-            if project.implementation_deadline.date() >= today:
-                notif_obj['deadlines_list'].append({'Implementation deadline':
-                project.implementation_deadline.date().strftime("%d/%m/%Y")})
-        except:
-            pass
-        try:
-            if project.report_deadline.date() >= today:
-                notif_obj['deadlines_list'].append({'Report deadline':
-                project.report_deadline.date().strftime("%d/%m/%Y")})
-        except:
-            pass
+            notif_obj = {'deadlines_list':[], 'project_name':project.title,
+                        'project_link':reverse('core_app:single_group', kwargs={'group_id':project.group.pk})}
+            # print('\n\n project link ', notif_obj['project_link'], '\n\n')
+            try:
+                if project.proposal_deadline.date() >= today:
+                    notif_obj['deadlines_list'].append({'Proposal deadline':
+                    project.proposal_deadline.date().strftime("%d/%m/%Y")})
+            except:
+                pass
+            try:
+                if project.documentation_deadline.date() >= today:
+                    notif_obj['deadlines_list'].append({'Documentation deadline':
+                    project.documentation_deadline.date().strftime("%d/%m/%Y")})
+            except:
+                pass
+            try:
+                if project.implementation_deadline.date() >= today:
+                    notif_obj['deadlines_list'].append({'Implementation deadline':
+                    project.implementation_deadline.date().strftime("%d/%m/%Y")})
+            except:
+                pass
+            try:
+                if project.report_deadline.date() >= today:
+                    notif_obj['deadlines_list'].append({'Report deadline':
+                    project.report_deadline.date().strftime("%d/%m/%Y")})
+            except:
+                pass
+            if len(notif_obj['deadlines_list']) > 0:
+                notif_list.append(notif_obj)
+        except Exception as e:
+            print(f"Exception occurred as : {e}")
         
-        if len(notif_obj['deadlines_list']) > 0:
-            notif_list.append(notif_obj)
     print(f"\nThe notifications list : {notif_list}\n")
     return JsonResponse({'notifications': notif_list}, status=200)
 
