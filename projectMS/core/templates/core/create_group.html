@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block page_scripts %}
+  <script src="{% static 'js/create_group.js' %}" defer></script>
+    <meta id="staticFilesPath" data-path="{% static 'images' %}" >
+{% endblock page_scripts %}
+
+{% block page_title %}
+  Create project
+{% endblock page_title %}
+
+{% block page_content %}
+
+<main class="container nav-layout">
+    {% include "sidebar.html" %}
+
+    <div class="create-project-container">
+        <h1 class="section-title">Create New Group</h1>
+
+        <div>
+            {% for message in messages  %}
+              <p>{{message}}</p>
+            {% endfor %}
+        </div>
+        
+        <form id="create-project-form" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="group_name">Group name</label>
+                <input type="text" id="group_name-subject" name="group_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="group_faculty">Faculty</label>
+                <input type="text" id="group_faculty" name="group_faculty" required>
+            </div>
+
+            <div class="form-group">
+                <label for="academic-year">Academic Year</label>
+                <input type="number" id="academic-year" name="academic_year" required>
+            </div>
+
+            <div class="form-group">
+                <label>Project Members</label>
+                <div id="project-members">
+                    <div class="member-element" data-member-number="1">
+                        <input type="text" name="projectMember1"  placeholder="Member Name" required>
+                        <input type="text" name="member_reg_num1"  placeholder="Reg num" required>
+                        <!-- <span class="remove-member">
+                            <img src="{% static 'images/icons/cross-check-icon.png' %}"  alt="">
+                        </span> -->
+                    </div> 
+                </div>
+                <button type="button" id="add_member_btn">Add Member</button>
+            </div>
+
+            <div class="form-group">
+                <button type="submit">Create Group</button>
+            </div>
+        </form>
+    </div>
+</main> 
+
+  
+{% endblock page_content %}
+
+

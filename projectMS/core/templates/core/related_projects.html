@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load custom_filters %}
+
+{% block page_scripts %}
+  <script src="{% static 'js/related_projects.js' %}" defer></script>
+  <meta id="userId" data-user-id="{{ request.user.pk }}" >
+{% endblock page_scripts %}
+
+{% block page_title %}
+  Related
+{% endblock page_title %}
+
+{% block page_content %}
+      
+    <section class="container nav-layout" id="dashboard-layout">
+        {% include "sidebar.html" %}
+        <aside class="projects-container">
+            <h2 class="section-title">Your Projects</h2>
+            <br>
+            <form class="search-bar input-field" id="search_project_form" action="" method="">
+                <input type="text" id="search_bar_field" placeholder="Search projects...">
+                <span id="search-btn"><i class="uil uil-search-alt"></i></span>
+            </form>
+            <div class="tabs" id="projects_filter_tabs">
+                {% csrf_token %}
+                <button class="tab btn {% if filter_used == 'ongoing' %} active {% endif %}" 
+                id="ongoing-filter" data-filter="ongoing"> Ongoing Projects</button>
+                <button class="tab btn {% if filter_used == 'all' %} active {% endif %}" id="all-filter" data-filter="all">All</button>
+                <button class="tab btn {% if filter_used == 'per_year' %} active {% endif %}" id="year-filter" data-filter="per_Year">Align by year</button>
+            </div>
+
+            <div class="card">
+                <p>Filter by year</p>
+                <div class="years_tabs">
+                    {% for year in all_years %}
+                        <a href="{% url 'core_app:filter_by_specific_year' 'all' year %}" class="tab btn active"> {{year}} </a>
+                    {% endfor %}
+                </div> 
+            </div>
+            
+            <div class="card">
+                {% if group.project.categories %}
+                    <p>Related 
+                        <br>
+                        {% for category in group.project.categories.all  %}
+                        <span class="related_tag link-tag" data-tag-category="{{ category.name }}">#{{ category.name }} </span>
+                        {% endfor %}
+                        <br>
+                    </p>
+                {% else %}
+                <p>You can also check these categories : 
+                    <br> 
+                    {% for category in all_categories  %}
+                    <span class="related_tag link-tag" data-tag-category="{{ category.name }}">#{{ category.name }} </span>
+                    {% endfor %}
+                    <br>
+                </p>
+                {% endif %}
+            </div>
+
+            <table class="projects_table">
+                <thead>
+                    <tr>
+                        <th>Group name</th>
+                        <th>Project name</th>
+                        <th>Year</th>
+                        <th>Faculty</th>
+                        <th>Platform</th>
+                        <th>Needs no upgrade</th>
+                        <th>Progress(&percnt;)</th>
+                    </tr> 
+                </thead>
+                <tbody id="table_body">
+                    {% for group in groups %}
+                    <tr data-url="{% url 'core_app:single_group' group.pk %}">
+                        <td class="prj_group">{{ group.name }}</td>
+                        <td class="prj_title clamp-1">{{ group.project.title }}</td>
+                        <td class="prj_year">{{ group.academic_year }}</td>
+                        <td class="prj_fac">{{ group.faculty }}</td>
+                        <td class="prj_platform">{{ group.project.platform }}</td>
+                        <td class="prj_upgrade">
+                            {% if group.project.upgradable %} <img src="{% static 'images/icons/check-green-icon-png.png' %}" alt="True">
+                            {% else %} <img src="{% static 'images/icons/cross-check-icon.png' %}" alt="False">
+                            {% endif %}
+                        </td>
+                        <td class="prj_progress">
+                            {% with group.project.progress as project_progress  %}
+                                {{ project_progress|multiply:25 }}
+                            {% endwith %}
+                        </td>
+                    </tr>   
+                    {% endfor %}
+                </tbody>
+            </table>
+        </aside>
+    </section>
+
+    <!-- Notifications Section -->
+    <section class="container" id="toast_overlay">
+        <div id="notifications-container" class="toast-container">
+            <!-- Notifications will be dynamically added here -->
+        </div>
+    </section>
+    
+{% endblock page_content %}

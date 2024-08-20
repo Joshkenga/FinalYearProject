@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block page_scripts %}
+  <script src="{% static 'js/set_deadlines.js' %}" defer></script>
+{% endblock page_scripts %}
+
+{% block page_title %}
+  Set deadlines
+{% endblock page_title %}
+
+{% block page_content %}
+
+<main class="container nav-layout">
+    {% include "sidebar.html" %}
+    <div class="deadlines-container">
+        <h1 class="section-title">Set Deadlines for project &quot;{{ project.title }}&quot;</h1>
+        
+        <div class="progress-bar-container">
+            <div class="progress-bar">
+                
+            {% with project.progress as project_progress  %}
+                <div class="progress" style="width: {% widthratio project_progress 1 25 %}%;">{% widthratio project_progress 1 25 %}%</div>
+            {% endwith %}
+            </div>
+        </div>
+
+        <form method="post" class="progress-steps" id="deadlines_form">
+            {% csrf_token %}
+            <h2 class="small-title">Project Steps</h2>
+            <div class="step">
+                <h3>Step 1: Proposal submission</h3>
+                <input type="date" name="proposal_deadline" value="{{ project.proposal_deadline|date:'Y-m-d' }}">
+            </div>
+            <div class="step">
+                <h3>Step 2: Documentation submission</h3>
+                <input type="date" name="documentation_deadline" value="{{ project.documentation_deadline|date:'Y-m-d' }}">
+            </div>
+            <div class="step">
+                <h3>Step 3: Project Implementation</h3>
+                <input type="date" name="implementation_deadline" value="{{ project.implementation_deadline|date:'Y-m-d' }}">
+            </div>
+            <div class="step">
+                <h3>Step 4: Report submission</h3>
+                <input type="date" name="report_deadline" value="{{ project.report_deadline|date:'Y-m-d' }}">
+            </div>
+        </form>
+
+        <div class="save-button-container">
+            <button type="button" id="set_deadlines_btn">Save Deadlines & Reminders</button>
+        </div>
+    </div>
+</main>
+  
+{% endblock page_content %}
+
+    
+

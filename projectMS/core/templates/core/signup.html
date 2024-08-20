@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_scripts %}
+
+<script src='{% static "js/signup.js" %}' defer></script>
+  
+{% endblock page_scripts %}
+
+{% block page_title %}
+  Sign Up
+{% endblock page_title %}
+
+{% block page_content %}
+
+<main class="container auth-container">
+    <div class="form-container">
+        <h2 class="section-title">Sign Up</h2>
+        <br>
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+        <br>
+        <form action="" method="POST" id="signup_form">
+            {% csrf_token %}
+            <input type="text" id="userName" name="userName" placeholder="Username" required autocomplete="off">
+            <input type="email" id="email" name="email" placeholder="Email" required autocomplete="off">
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
+            <button class="btn btn-primary" id="signupBtn" type="submit">Sign Up</button>
+        </form>
+        <br>
+        <a class="link_simple" href="{% url 'core_app:login' %}">Already have an account ? Login</a>
+        <br>
+      </div>
+</main>
+  
+{% endblock page_content %}
+

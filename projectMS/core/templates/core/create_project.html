@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block page_scripts %}
+{% endblock page_scripts %}
+
+{% block page_title %}
+  Create project
+{% endblock page_title %}
+
+{% block page_content %}
+
+<main class="container nav-layout">
+    {% include "sidebar.html" %}
+
+    <div class="create-project-container">
+        <h1 class="section-title">Assign a Project  to group <i>{{ project_group.name }}</i> </h1>
+        
+        <form id="create-project-form" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="project-subject">Project Subject *</label>
+                <input type="text" id="project-subject" name="projectSubject" required>
+                
+                <label for="projectPlatform">Select a platform *</label>
+                <select name="projectPlatform" id="projectPlatform" required>
+                      <option value="Mobile">Mobile</option>
+                      <option value="Web">Web</option>
+                      <option value="Desktop">Desktop</option>
+                      <option value="CrossPlatform">CrossPlatform</option>
+                </select>
+
+                <label for="projectCategory">Select a category *</label>
+                <select name="projectCategory" id="projectCategory" multiple required>
+                    {% for category in categories %}
+                      <option value="{{ category.name }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="projectSupervisor">Select a supervisor *</label>
+                <select name="projectSupervisor" id="projectSupervisor" required>
+                    {% for supervisor in supervisors %}
+                      <option value="{{ supervisor.pk }}">{{ supervisor.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+            <div class="form-group">
+                <button type="submit">Create Project</button>
+            </div>
+        </form>
+    </div>
+</main> 
+
+  
+{% endblock page_content %}
+
+

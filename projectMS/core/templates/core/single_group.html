@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load custom_filters %}
+
+{% block page_scripts %}
+  <script src="{% static 'js/single_project.js' %}" defer></script>
+  <meta id="projectId" data-project-id="{{ project.pk }}" >
+{% endblock page_scripts %}
+
+{% block page_title %}
+  Project : {{ project.title }}
+{% endblock page_title %}
+
+{% block page_content %}
+<main class="container single_project-container nav-layout">
+    {% include "sidebar.html" %}
+    <div class="members-and-progress card">
+
+        <div>
+            {% for message in messages  %}
+              <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        <div class="flex align-center justify-between">
+            <h2 class="section-title">{{ group.name }}</h2>
+            <a href="{% url 'core_app:delete_group' group.pk %}" class="action-link btn btn-primary" id="delete_group_btn"> Delete this group</a>
+        </div>
+        
+        <div class="project-members">
+            <h3 class="small-title">Group members</h3>
+            <ul class="members-list">
+                    {% for member in group_members  %}
+                        <li class="project-member"><span>{{ member.name }}</span> <b>{{member.regnumber}}</b></li>
+                    {% endfor %}
+            </ul>
+        </div>
+
+        {% if group.project %}
+        <br>
+        <h3 class="section-title">Project : {{project.title}}</h3>
+        <br>
+        <h4> Project supervisor: 
+            {% if group.project.project_supervisor %} {{ project.project_supervisor.name }}
+            {% else %} No supervisor for this project
+            {% endif %}    
+        </h4>
+        <div class="project-info card">
+            <h4 class="small-title">Categories</h4>
+            <ul>
+                {% for category in project.categories.all  %}
+                  <li>{{category.name}}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="project-progress card">
+            {% for message in messages  %}
+              <p>{{ message }}</p>
+            {% endfor %}
+            <h3 class="small-title">Project : {{project.title}}</h3>
+            <ul class="progress-steps">
+                {% csrf_token %}
+                {% with project.progress as project_progress %}    
+                <li class="progress-step">
+                    <span class="step-name">Project proposal </span> 
+                    <form action="" method="post">
+                        <input type="checkbox"
+                    name="proposal_submitted" id="proposal_submitted" data-step-no="1"
+                     {% if project_progress >= 1 %} checked {% endif %} 
+                     {% if project.is_completed %} disabled {% endif %} > 
+                    </form>
+                    
+                </li>
+                <li class="progress-step">
+                    <span class="step-name">Project Documentation </span>
+                    
+                    <form action="" method="post">
+                        <input type="checkbox"
+                        name="documentation_submitted" id="documentation_submitted" data-step-no="2"
+                        {% if project_progress >= 2 %} checked {% endif %}
+                        {% if project.is_completed %} disabled {% endif %} > 
+                    </form> 
+                    
+                </li>
+                <li class="progress-step">
+                    <span class="step-name">Project Implementation</span> 
+                    <form action="" method="post">
+                        <input type="checkbox"
+                     name="implemetation_submitted" id="implemetation_submitted" data-step-no="3" 
+                     {% if project_progress >= 3 %} checked {% endif %}
+                     {% if project.is_completed %} disabled {% endif %} > 
+                    </form>
+                    
+                </li>
+                <li class="progress-step">
+                    <span class="step-name">Report</span> 
+                    <form action="" method="post">
+                        <input type="checkbox" name="report_submitted" id="report_submitted" data-step-no="4"
+                         {% if project_progress >= 4 %} checked {% endif %}
+                         {% if project.is_completed %} disabled {% endif %} > 
+                    </form>
+                     
+                </li>
+                {% endwith %}
+            </ul>
+        </div>
+        <div class="project-actions">
+            <a href="#" class="action-link btn btn-primary {% if project.is_completed %} hidden {% endif %}" id="markAsCompleted"  >Mark as completed</a>
+            <a href="{% url 'core_app:set_deadlines' project.pk %}" class="action-link btn btn-primary {% if project.is_completed %} hidden {% endif %}" id="set-deadlines"  >Set deadlines</a>
+            
+            {% if project.is_completed %}
+              <div class="comment-box">
+                    <h4>Your comment on this project : </h4>
+                    <p class="comment-content">{{ project.comment }}</p>
+              </div>
+            {% endif %}
+        </div>
+
+        <div class="project-files card">
+            <h2>Project Files</h2>
+            <ul>
+                {% if project.report_file %}
+                <li><a href="{{project.report_file.url }}" target="_blank">Project report</a></li>
+                {% endif %}
+                {% if project.documentation_file %}
+                <li><a href="{{project.documentation_file.url }}" target="_blank">Project Documentation</a></li>
+                {% endif %}
+
+                {% if not project.is_completed %}
+                    {% if not project.report_file or not project.documentation_file %}
+                    <br>
+                    <h1>Upload Files for {{ project.title }}</h1>
+                    <br>
+                    <form method="post" enctype="multipart/form-data" action="{% url 'core_app:submit_project_files' project.pk %}">
+                        {% csrf_token %}
+                        <label for="project_documentation">Project Documentation:</label>
+                        <input type="file" name="project_documentation" id="project_documentation"><br>
+                        <br>
+                        <label for="project_report">Project Report:</label>
+                        <input type="file" name="project_report" id="project_report"><br>
+                        <br>
+                        <button class="btn btn-primary" type="submit">Upload Files</button>
+                        <br>
+                    </form>
+                    
+                    {% endif %}
+                {% endif %}
+                
+                
+            </ul>
+        </div>
+        </div>
+
+        {% else %}
+
+        <div class="project-actions">
+            <a href="{% url 'core_app:create_project' group.pk %}" class="action-link btn btn-primary " id="assign_project">Assign a Project</a>
+        </div>
+
+        {% endif %}
+    
+</main>
+
+<section class="popup-overlay" id="complete_project_overlay">
+    <div class="popup-container container">
+        <div class="popup">
+            <p>This action is irreversible, do you want to proceed?</p>
+            
+            <input type="text" name="project_comment" id="project_comment" placeholder="Provide a comment on this project here *" required>
+            
+            <p>Are you satisfied with this project ?</p>
+            <div class="radio-group">
+                <div>
+                    <input type="radio" id="option1" name="upgradable" value="1">
+                    <label for="option1">YES, IT IS OKAY THIS WAY</label><br>
+                </div>
+                <div>
+                    <input type="radio" id="option2" name="upgradable" value="0" checked>
+                    <label for="option2">NO, IT MAY NEED AN UPGRADE</label><br>
+                </div>
+            </div>
+            
+            <div class="popup-actions">
+                <span class="btn btn-primary" id="cancel_popup_btn">CANCEL</span>
+                <span class="btn btn-primary" id="continue_popup_btn">CONTINUE</span>
+            </div>
+        </div>
+    </div>
+    
+</section>
+
+
+  
+{% endblock page_content %}
+
